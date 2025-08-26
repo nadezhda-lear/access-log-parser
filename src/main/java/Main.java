@@ -11,9 +11,9 @@ public class Main {
         int Dif = firstNumber-secondNumber;
         int Com = firstNumber*secondNumber;
         System.out.println("Сумма: " + Sum );
-        System.out.println("Разность: " + Dif );
+        System.out.println("Разность: " + Dif);
         double quotient = (double) firstNumber/secondNumber;
-        System.out.println("Произведение: " + Com );
-        System.out.println("Частное : " + quotient );
+        System.out.println("Произведение: " + Com);
+        System.out.println("Частное : " + quotient);
     }
 }
