@@ -11,7 +11,7 @@ public class Main {
 
         while (true) {
             int totalLength = 0;
-            int minLength = 1024;
+            int minLength = maxLineLength;
             int maxLength = 0;
             System.out.println("Введите путь к файлу  и нажмите <Enter>: ");
             String path = new Scanner(System.in).nextLine();
