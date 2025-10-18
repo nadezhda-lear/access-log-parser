@@ -14,7 +14,7 @@ public class Statistics {
     static HashSet<String> allIncorrectSitePaths = new HashSet<>();
     private HashSet<String> hashBrouser = new HashSet<>();
     private HashSet<String> hashPlatform = new HashSet<>();
-    private HashMap<String, Integer> hshSetSystem = new HashMap<>();
+    private HashMap<String, Integer> hshSetBrouser = new HashMap<>();
     private HashMap<String, Integer> hshSetPlatform = new HashMap<>();
     private String path;
     private Long responseSize;
@@ -62,11 +62,11 @@ public class Statistics {
             platform = uPlatform.getPlatform();
             if (browser != null) {
                 totalB += 1;
-                if (hshSetSystem.containsKey(browser)) {
-                    int k = hshSetSystem.get(browser);
-                    hshSetSystem.put(browser, k += 1);
+                if (hshSetBrouser.containsKey(browser)) {
+                    int k = hshSetBrouser.get(browser);
+                    hshSetBrouser.put(browser, k += 1);
                 } else {
-                    hshSetSystem.put(browser, 1);
+                    hshSetBrouser.put(browser, 1);
                 }
             }
             if (platform != null) {
@@ -111,16 +111,22 @@ public class Statistics {
         return hashBrouser;
     }
 
-    //Вывод каждой операционной системы из лога и ее количество
-    public HashMap<String, Integer> hshSetSystem() {
-        return hshSetSystem;
+    //Вывод каждого браузера из лога и ее количество
+    public HashMap<String, Integer> hshSetBrouser() {
+        return hshSetBrouser;
     }
+
+    //Вывод каждой операционной системы из лога и ее количество
+    public HashMap<String, Integer> hshSetPlatform() {
+        return hshSetPlatform;
+    }
+
 
     //расчет доли каждого браузера
     public HashMap<String, Double> shareOfEachOperatingBrouser() {
         HashMap<String, Double> shareOfEachOperatingBrouser = new HashMap<>();
         ;
-        for (Map.Entry<String, Integer> entry : hshSetSystem.entrySet()) {
+        for (Map.Entry<String, Integer> entry : hshSetBrouser.entrySet()) {
             String key = entry.getKey();
             Integer value = entry.getValue();
             double v = (double) value;

@@ -42,10 +42,11 @@ public class Main {
                     s.addEntry(log);
                 }
                 System.out.println("Средний объем трафика в час: " + s.getTrafficRate());
-               System.out.println("Все пути сайта "+s.allSitePaths());
-                System.out.println("Все некорректные пути сайта "+s.allIncorrectSitePaths());
-                System.out.println("Доля каждой операционной системы "+s.shareOfEachOperatingPlatform());
-                System.out.println("Доля каждого браузера "+s.shareOfEachOperatingBrouser());
+                System.out.println("Все пути сайта " + s.allSitePaths());
+                System.out.println();
+                System.out.println("Все некорректные пути сайта " + s.allIncorrectSitePaths());
+                System.out.println("Доля каждой операционной системы " + s.shareOfEachOperatingPlatform());
+                System.out.println("Доля каждого браузера " + s.shareOfEachOperatingBrouser());
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
