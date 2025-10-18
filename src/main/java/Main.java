@@ -35,11 +35,15 @@ public class Main {
                     if (line.length() > maxLineLength) {
                         throw new MyCustomException("В файле обнаружена строка длиннее " + maxLineLength + " символов: " + line.substring(0, 100) + "...");
                     }
+
                     total = total + 1;
                     LogEntry log = new LogEntry(line);
+
                     s.addEntry(log);
                 }
                 System.out.println("Средний объем трафика в час: " + s.getTrafficRate());
+                System.out.println("Все пути сайта "+s.allSitePaths());
+                System.out.println("Доля каждой операционной системы "+s.shareOfEachOperatingSystem());
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
