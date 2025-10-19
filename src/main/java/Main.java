@@ -11,7 +11,6 @@ public class Main {
         int total = 0;
         int i = 1;
         int maxLineLength = 1024;
-
         while (true) {
             System.out.println("Введите путь к файлу  и нажмите <Enter>: ");
             String path = new Scanner(System.in).nextLine();
@@ -38,15 +37,18 @@ public class Main {
 
                     total = total + 1;
                     LogEntry log = new LogEntry(line);
-
                     s.addEntry(log);
                 }
                 System.out.println("Средний объем трафика в час: " + s.getTrafficRate());
-                System.out.println("Все пути сайта " + s.allSitePaths());
+           //     System.out.println("Все пути сайта " + s.allSitePaths());
                 System.out.println();
                 System.out.println("Все некорректные пути сайта " + s.allIncorrectSitePaths());
                 System.out.println("Доля каждой операционной системы " + s.shareOfEachOperatingPlatform());
                 System.out.println("Доля каждого браузера " + s.shareOfEachOperatingBrouser());
+                System.out.println("Запросов от Bota " + s.TotalBots());
+                System.out.println("Подсчет средней посещаемости одним пользователем. Без ботов.  " + s.calculatingAverageTrafficPerUser());
+                System.out.println("подсчёт среднего количества посещений сайта за час. Без ботов.  " + s.averageNumberOfWebsiteVisitsPerHour());
+                System.out.println("подсчёт среднего количества ошибочных запросов в час " + s.averageErrorsOfWebsiteVisitsPerHour());
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

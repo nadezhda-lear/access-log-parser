@@ -1,5 +1,5 @@
-import java.time.LocalDateTime;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -7,6 +7,9 @@ import java.util.Map;
 
 public class Statistics {
     private long totalTraffic;
+    private long errorCount;
+    private long totalLine;
+    String ipAdd;
     private LocalDateTime minTime;
     private LocalDateTime maxTime;
     private HashSet<String> hashSet;
@@ -16,27 +19,37 @@ public class Statistics {
     private HashSet<String> hashPlatform = new HashSet<>();
     private HashMap<String, Integer> hshSetBrouser = new HashMap<>();
     private HashMap<String, Integer> hshSetPlatform = new HashMap<>();
+    private HashMap<String, Integer> hshSetUsers = new HashMap<>();
+
+    private HashMap<String, Integer> hshSetBot = new HashMap<>();
     private String path;
     private Long responseSize;
     private String userAgent;
     private String browser;
     String platform;
+    Boolean bot;
     double totalB = 0;
     double totalP = 0;
+    double totalBt = 0;
 
     public Statistics() {
         this.totalTraffic = 0;
+        this.totalLine = 0;
+        this.errorCount = 0;
         this.minTime = null;
         this.maxTime = null;
         this.responseSize = 0L;
         this.path = "";
         this.userAgent = "";
         this.browser = "";
+        this.bot = false;
+        this.ipAdd = "";
 
     }
 
     public void addEntry(LogEntry logEntry) {
         totalTraffic += logEntry.getResponseSize();
+        totalLine += 1;
 
         if (minTime == null || logEntry.getTime().isBefore(minTime)) {
             minTime = logEntry.getTime();
@@ -55,11 +68,18 @@ public class Statistics {
             allIncorrectSitePaths.add(String.valueOf(path));
         }
 
+        if (logEntry.getResponseCode() >= 400 && logEntry.getResponseCode() <= 499) {
+            errorCount++;
+        } else if (logEntry.getResponseCode() >= 500 && logEntry.getResponseCode() <= 599) {
+            errorCount++;
+        }
+
+
         if (logEntry.getUserAgent().split(" ").length > 3) {
-            UserAgent uBroweser = new UserAgent(logEntry.getUserAgent());
-            UserAgent uPlatform = new UserAgent(logEntry.getUserAgent());
-            browser = uBroweser.getBrowser();
-            platform = uPlatform.getPlatform();
+            UserAgent userAgent = new UserAgent(logEntry.getUserAgent());
+            browser = userAgent.getBrowser();
+            platform = userAgent.getPlatform();
+            bot = userAgent.isBot();
             if (browser != null) {
                 totalB += 1;
                 if (hshSetBrouser.containsKey(browser)) {
@@ -78,7 +98,19 @@ public class Statistics {
                     hshSetPlatform.put(platform, 1);
                 }
             }
-
+            if (bot) {
+                totalBt += 1;
+            } else {
+                ipAdd = logEntry.getIpAdd();
+                if (ipAdd != null) {
+                    if (hshSetUsers.containsKey(ipAdd)) {
+                        int l = hshSetUsers.get(ipAdd);
+                        hshSetUsers.put(ipAdd, l += 1);
+                    } else {
+                        hshSetUsers.put(ipAdd, 1);
+                    }
+                }
+            }
         }
     }
 
@@ -121,6 +153,11 @@ public class Statistics {
         return hshSetPlatform;
     }
 
+    //Вывод уникальных пользователей
+    public HashMap<String, Integer> hshSetUsers() {
+        return hshSetUsers;
+    }
+
 
     //расчет доли каждого браузера
     public HashMap<String, Double> shareOfEachOperatingBrouser() {
@@ -135,6 +172,7 @@ public class Statistics {
         }
         return shareOfEachOperatingBrouser;
     }
+
     //расчет доли каждой операционной системы
     public HashMap<String, Double> shareOfEachOperatingPlatform() {
         HashMap<String, Double> shareOfEachOperatingPlatform = new HashMap<>();
@@ -149,4 +187,52 @@ public class Statistics {
         return shareOfEachOperatingPlatform;
     }
 
+    // вывод ботов
+    public double TotalBots() {
+        return totalB;
+    }
+
+    //Метод подсчёта среднего количества посещений сайта за час..
+    public double averageNumberOfWebsiteVisitsPerHour() {
+        if (minTime == null || maxTime == null) {
+            return 0.0;
+        }
+        Duration duration = Duration.between(minTime, maxTime);
+        long hours = duration.toHours();
+
+        if (hours == 0) {
+            return 0.0;
+        }
+        return (double) totalLine - totalB / hours;
+    }
+
+    public double averageErrorsOfWebsiteVisitsPerHour() {
+        if (minTime == null || maxTime == null) {
+            return 0.0;
+        }
+        Duration duration = Duration.between(minTime, maxTime);
+        long hours = duration.toHours();
+
+        if (hours == 0) {
+            return 0.0;
+        }
+        return (double) errorCount / hours;
+    }
+
+    public double calculatingAverageTrafficPerUser() {
+//всего запросов от пользователей
+        long totalUsers = hshSetUsers.values().stream()
+                .mapToInt(Integer::intValue)
+                .sum();
+//количество пользователей
+        int totalUnicUser = 0;
+        for (Integer score : hshSetUsers.values()) {
+            totalUnicUser += 1;
+        }
+        return (double) totalUnicUser / totalUsers;
+    }
+
+    public String getIpAdd() {
+        return ipAdd;
+    }
 }
