@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 
 //C:\Users\nvasileva\Downloads\access.log
+//C:\Users\nvasileva\Downloads\new13.log
 public class Main {
     public static void main(String[] args) {
         int total = 0;
@@ -47,8 +48,13 @@ public class Main {
                 System.out.println("Доля каждого браузера " + s.shareOfEachOperatingBrouser());
                 System.out.println("Запросов от Bota " + s.TotalBots());
                 System.out.println("Подсчет средней посещаемости одним пользователем. Без ботов.  " + s.calculatingAverageTrafficPerUser());
+                System.out.println("Подсчет максимальной  посещаемости одним пользователем. Без ботов.  " + s.calculatingMaxTrafficPerUser());
                 System.out.println("подсчёт среднего количества посещений сайта за час. Без ботов.  " + s.averageNumberOfWebsiteVisitsPerHour());
                 System.out.println("подсчёт среднего количества ошибочных запросов в час " + s.averageErrorsOfWebsiteVisitsPerHour());
+                System.out.println("расчет пиковой посещаемости сайта (в секунду) "+s.calculatingPeakWebsiteTrafficPerSecond());
+                System.out.println("Список доменов  " + s.getHashRever());
+
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

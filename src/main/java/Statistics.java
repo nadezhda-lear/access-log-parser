@@ -1,5 +1,6 @@
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -12,19 +13,21 @@ public class Statistics {
     String ipAdd;
     private LocalDateTime minTime;
     private LocalDateTime maxTime;
+    private String sec;
     private HashSet<String> hashSet;
     static HashSet<String> allSitePaths = new HashSet<>();
     static HashSet<String> allIncorrectSitePaths = new HashSet<>();
-    private HashSet<String> hashBrouser = new HashSet<>();
-    private HashSet<String> hashPlatform = new HashSet<>();
+    private HashSet<String> hashRever = new HashSet<>();
     private HashMap<String, Integer> hshSetBrouser = new HashMap<>();
     private HashMap<String, Integer> hshSetPlatform = new HashMap<>();
     private HashMap<String, Integer> hshSetUsers = new HashMap<>();
+    private HashMap<String, Integer> hshSetSecond = new HashMap<>();
 
     private HashMap<String, Integer> hshSetBot = new HashMap<>();
     private String path;
     private Long responseSize;
     private String userAgent;
+    private String refer;
     private String browser;
     String platform;
     Boolean bot;
@@ -36,6 +39,7 @@ public class Statistics {
         this.totalTraffic = 0;
         this.totalLine = 0;
         this.errorCount = 0;
+        this.sec = null;
         this.minTime = null;
         this.maxTime = null;
         this.responseSize = 0L;
@@ -44,6 +48,7 @@ public class Statistics {
         this.browser = "";
         this.bot = false;
         this.ipAdd = "";
+        this.refer = "";
 
     }
 
@@ -74,6 +79,34 @@ public class Statistics {
             errorCount++;
         }
 
+        //Метод, возвращающий список сайтов, со страниц которых есть ссылки на текущий сайт hashRever
+        refer = logEntry.getRefer();
+        if (refer != null && !refer.equals("-")) {
+            //надо найти домен
+            if (!refer.contains("%3A%2F%2F")) {
+                String domen = "";
+                String[] parts = refer.split("/");
+                domen = parts[2];
+                if (!hashRever.contains(domen)) {
+                    hashRever.add(domen);
+                }
+            } else {
+                String domen = "";
+                String firstBrackets = "";
+                int openParenIndex = refer.indexOf('F');
+                int closeParenIndex = refer.indexOf('&');
+                if (openParenIndex != -1 && closeParenIndex != -1) {
+                    domen = refer.substring(openParenIndex + 1, closeParenIndex);
+                    ///  String[] parts = firstBrackets.split(";");
+                    // domen = parts[2];
+                    if (!hashRever.contains(domen)) {
+                        hashRever.add(domen);
+                    }
+                }
+            }
+        }
+
+
 
         if (logEntry.getUserAgent().split(" ").length > 3) {
             UserAgent userAgent = new UserAgent(logEntry.getUserAgent());
@@ -101,6 +134,7 @@ public class Statistics {
             if (bot) {
                 totalBt += 1;
             } else {
+                //обираем статистику по уникальному пользователю
                 ipAdd = logEntry.getIpAdd();
                 if (ipAdd != null) {
                     if (hshSetUsers.containsKey(ipAdd)) {
@@ -109,6 +143,14 @@ public class Statistics {
                     } else {
                         hshSetUsers.put(ipAdd, 1);
                     }
+                }
+                //фиксировать количество посещений за одну каждую секунду
+                sec = String.valueOf(logEntry.getTime());
+                if (hshSetSecond.containsKey(sec)) {
+                    int li = hshSetSecond.get(sec);
+                    hshSetSecond.put(sec, li += 1);
+                } else {
+                    hshSetSecond.put(sec, 1);
                 }
             }
         }
@@ -138,11 +180,6 @@ public class Statistics {
         return allIncorrectSitePaths;
     }
 
-    // вывод каждого браузера из лога
-    public HashSet<String> hashBrouser() {
-        return hashBrouser;
-    }
-
     //Вывод каждого браузера из лога и ее количество
     public HashMap<String, Integer> hshSetBrouser() {
         return hshSetBrouser;
@@ -158,6 +195,9 @@ public class Statistics {
         return hshSetUsers;
     }
 
+    public HashMap<String, Integer> hshSetSecond() {
+        return hshSetSecond;
+    }
 
     //расчет доли каждого браузера
     public HashMap<String, Double> shareOfEachOperatingBrouser() {
@@ -232,7 +272,21 @@ public class Statistics {
         return (double) totalUnicUser / totalUsers;
     }
 
+
+    public int calculatingMaxTrafficPerUser(){
+        Integer maxPerUser =  Collections.max(hshSetUsers.values());
+        return maxPerUser;
+    }
     public String getIpAdd() {
         return ipAdd;
+    }
+
+    public int calculatingPeakWebsiteTrafficPerSecond(){
+        Integer maxValue =  Collections.max(hshSetSecond.values());
+        return  maxValue;}
+
+
+    public HashSet<String> getHashRever() {
+        return hashRever;
     }
 }
